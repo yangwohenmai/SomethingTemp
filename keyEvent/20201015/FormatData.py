@@ -69,8 +69,9 @@ def clean(row):
 
 
 # 输入目录
-filelist = walkFile('C:/Users/Ryan/Desktop/keyEvent/keyEvent/all event/announcement/')
+filelist = walkFile('E:/MyGit/SomethingTemp/keyEvent/all event/announcement/')
 count = 0
+res = pd.DataFrame(columns=('guidanceID', 'Key Developments By Date', 'Excel Company ID', 'Key Developments by Type', 'Company Name(s)', 'Key Development Sources'))
 for filepath in filelist:
     count  = count + 1
     dt=pd.DataFrame()
@@ -80,7 +81,7 @@ for filepath in filelist:
     print(dt.head(15))
     dt.insert(0, 'guidanceID', range(1, 1 + len(dt)))
     dt=dt.drop(columns=['Key Development Headline','Key Development Situation'])
-    res = pd.DataFrame(columns=('guidanceID', 'Key Developments By Date', 'Excel Company ID', 'Key Developments by Type', 'Company Name(s)', 'Key Development Sources'))
+    #res = pd.DataFrame(columns=('guidanceID', 'Key Developments By Date', 'Excel Company ID', 'Key Developments by Type', 'Company Name(s)', 'Key Development Sources'))
     #res = pd.DataFrame()
     for index,row in dt.iterrows():
         #print(row)
@@ -91,6 +92,6 @@ for filepath in filelist:
         #print(res)
         #res.to_excel("result"+ str(count) +".xlsx",index=False)
 
-    res.to_excel("result"+ str(count) +".xlsx",index=False)
+res.to_excel("result"+ str(count) +".xlsx",index=False)
 
 
