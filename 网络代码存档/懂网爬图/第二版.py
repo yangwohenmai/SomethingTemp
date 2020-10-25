@@ -34,7 +34,7 @@ page = soup.find_all('a', class_='page-numbers')
 # 最大页数
 max_page = page[-2].text
 for n in range(1, int(max_page) + 1):
-    path = 'D:/mzitu/' #存储路径
+    path = 'mzitu/' #存储路径
     all_url = 'https://www.mzitu.com' #重新赋值
     if n!=1:
         all_url=  all_url+"/page/"+str(n)+"/";
