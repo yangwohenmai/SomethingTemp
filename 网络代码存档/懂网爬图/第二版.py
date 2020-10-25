@@ -56,6 +56,11 @@ for n in range(1, int(max_page) + 1):
         # print (page2[0])
         max_page2 = page2[-2].text;
         path = path + alt.strip().replace('?', '');
+        path = path.replace(':', '');
+        path = path.replace('|', '');
+        path = path.replace('*', '');
+        path = path.replace('<', '');
+        path = path.replace('>', '');
         if (os.path.exists(path)):
             pass
             # print('目录已存在')
