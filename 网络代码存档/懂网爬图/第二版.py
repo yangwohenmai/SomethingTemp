@@ -34,33 +34,33 @@ page = soup.find_all('a', class_='page-numbers')
 # 最大页数
 max_page = page[-2].text
 for n in range(1, int(max_page) + 1):
-    path = 'mzitu/' #存储路径
+    path = 'mzitu/' #存储路径，不要带特殊符号
     all_url = 'https://www.mzitu.com' #重新赋值
     if n!=1:
-        all_url=  all_url+"/page/"+str(n)+"/";
+        all_url=  all_url+"/page/"+str(n)+"/"
     print('开始爬第 %s 页, 网址是 %s' % (n , all_url))
-    start_html = requests.get(all_url, headers=Hostreferer);
+    start_html = requests.get(all_url, headers=Hostreferer)
     soup = BeautifulSoup(start_html.text, "html.parser")
-#    alt =  soup.find(id='pins').find_all('a', target='_blank').find_all('img',class_='lazy').get('alt');
+#   alt =  soup.find(id='pins').find_all('a', target='_blank').find_all('img',class_='lazy').get('alt')
     hrefs = soup.find(id='pins').find_all('a', target='_blank'); #根据ID找
  
     for href in hrefs:
-        imgs = href.find('img',class_='lazy');
+        imgs = href.find('img',class_='lazy')
         if imgs == None:
-            break;
-        alt = imgs.get('alt');
-        url = href.get('href');
-        start_html2 = requests.get(url, headers=Hostreferer);
+            break
+        alt = imgs.get('alt')
+        url = href.get('href')
+        start_html2 = requests.get(url, headers=Hostreferer)
         soup2 = BeautifulSoup(start_html2.text, "html.parser")  # 缩进格式
-        page2 = soup2.find('div', class_='pagenavi').find_all('a');
+        page2 = soup2.find('div', class_='pagenavi').find_all('a')
         # print (page2[0])
-        max_page2 = page2[-2].text;
-        path = path + alt.strip().replace('?', '');
-        path = path.replace(':', '');
-        path = path.replace('|', '');
-        path = path.replace('*', '');
-        path = path.replace('<', '');
-        path = path.replace('>', '');
+        max_page2 = page2[-2].text
+        path = path + alt.strip().replace('?', '')
+        path = path.replace(':', '')
+        path = path.replace('|', '')
+        path = path.replace('*', '')
+        path = path.replace('<', '')
+        path = path.replace('>', '')
         if (os.path.exists(path)):
             pass
             # print('目录已存在')
@@ -73,16 +73,16 @@ for n in range(1, int(max_page) + 1):
             # url = href.get('href');
             url3 = url+'/'+str(m)+'/'
             print('开始爬→%s' % url3)
-            start_html3 = requests.get(url3, headers=Hostreferer);
+            start_html3 = requests.get(url3, headers=Hostreferer)
             soup3 = BeautifulSoup(start_html3.text, "html.parser")  # 缩进格式
             picSrc = soup3.find('div', class_='main-image').find('a').find('img').get('src');#.get('src');#.get('src'); #div class="main-image"
             # imglist = #获取当前页上所有的子连接, 不包含class="box"
             html = requests.get(picSrc, headers=Picreferer)
  
             # 提取图片名字
-            file_name = path+'/'+picSrc.split(r'/')[-1];
+            file_name = path+'/'+picSrc.split(r'/')[-1]
             # 保存图片
             f = open(file_name, 'wb')
             f.write(html.content)
             f.close()
-            print('图片保存到%s' % file_name);
+            print('图片保存到%s' % file_name)
