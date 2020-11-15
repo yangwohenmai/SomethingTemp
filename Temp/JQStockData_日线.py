@@ -57,8 +57,9 @@ def savestklist():
     jqallindex = pd.read_csv('./stockdb/jqallindex.csv', encoding='GBK', index_col=0)
     return
 
+# 读取配置文件
 def readconfig(x):
-    path1=os.getcwd()
+    #path1=os.getcwd()
     config = open('./jqconfig.cfg', mode='r', buffering=-1, encoding='utf-8', errors=None, newline=None, closefd=True, opener=None)
     tmp = config.readlines()
     jquser = tmp[x].split(',', 1)[0].strip()
@@ -80,6 +81,11 @@ def writelocallist():
     tmp.close()
     return
 
+# 更新股票日期信息表
+def updateStockInfo():
+    jqallstock = get_all_securities()
+    jqallstock.to_csv("./stockdb/jqallstock.csv", encoding='GBK')
+
 def getdatajqnew(jqcode, count, startdate, jqheadtime):
     tmp = locals()
     enddatetime = tommowtime
@@ -100,7 +106,6 @@ def getdatajqnew(jqcode, count, startdate, jqheadtime):
             if(loadingcount == 5):
                 return pd.DataFrame()
         else:
-            #if(jqdata.empty == False):
             datacount = datacount + 1
             tmp['jqpandas' + str(datacount)] = jqdata
             tmptime = jqdata['date'].tolist()[0]
@@ -165,16 +170,16 @@ def getdata(jqcode, n, remain):
             datajq.to_csv(dbdirjqweek, encoding='GBK')
             datajq = getdatajqnew(jqcode, '1d', starttime, jqdayheadtime)
             datajq.to_csv(dbdirjqday, encoding='GBK')
-            #datajq = getdatajqnew(jqcode, '60m', starttime, jq60mheadtime)
-            #datajq.to_csv(dbdirjq60m, encoding='GBK')
-            #datajq = getdatajqnew(jqcode, '30m', starttime, jq30mheadtime)
-            #datajq.to_csv(dbdirjq30m, encoding='GBK')
-            #datajq = getdatajqnew(jqcode, '15m', starttime, jq15mheadtime)
-            #datajq.to_csv(dbdirjq15m, encoding='GBK')
-            #datajq = getdatajqnew(jqcode, '5m', starttime, jq5mheadtime)
-            #datajq.to_csv(dbdirjq5m, encoding='GBK')
-            #datajq = getdatajqnew(jqcode, '1m', starttime, jq1mheadtime)
-            #datajq.to_csv(dbdirjq1m, encoding='GBK')
+            datajq = getdatajqnew(jqcode, '60m', starttime, jq60mheadtime)
+            datajq.to_csv(dbdirjq60m, encoding='GBK')
+            datajq = getdatajqnew(jqcode, '30m', starttime, jq30mheadtime)
+            datajq.to_csv(dbdirjq30m, encoding='GBK')
+            datajq = getdatajqnew(jqcode, '15m', starttime, jq15mheadtime)
+            datajq.to_csv(dbdirjq15m, encoding='GBK')
+            datajq = getdatajqnew(jqcode, '5m', starttime, jq5mheadtime)
+            datajq.to_csv(dbdirjq5m, encoding='GBK')
+            datajq = getdatajqnew(jqcode, '1m', starttime, jq1mheadtime)
+            datajq.to_csv(dbdirjq1m, encoding='GBK')
         elif n == 'month':
             print('+++++++++获取月线数据+++++++++++')
             datajq = getdatajqnew(jqcode, '1M', starttime, jqmonthheadtime)
@@ -217,7 +222,7 @@ def getdata(jqcode, n, remain):
 def followorder():
     count, total = querylast()
     print('|+++++++++当前帐号聚宽数据获取余额为%s次,上限为%s次++++++++++' % (count, total))
-    print('---当前文档内第一个代码为%s---' % (jqlist[0]))
+    print('---当前文档内第一个代码为%s---' % (jqlist[0] if len(jqlist) > 0 else "null"))
     print('|++++++++++++请选择你需要进行的操作，菜单说明如下++++++++++++++++]')
     print('|自动下载列表中股票的完整历史数据直到剩余次数少于1250000请输入:1')
     print('|             手动选择周期下载文档中首只股票的分时数据请输入:2')
@@ -226,15 +231,16 @@ def followorder():
     print('|                     退出当前聚宽帐号并切换帐号请输入:5')
     print('|                   从文档中删除第一个股票代码请输入:d')
     print('|                   获取所有的股票交易日并保存请输入:td')
-    print('|                   更新股票代码列表并保存请输入:-u')
+    print('|                   更新股票代码列表并保存请输入:updatestock')
+    print('|                   更新股票信息表并保存请输入:updateinfo')
     print('|自动下载列表中股票的单一类型历史数据直到剩余次数少于1250000请输入:insert')
     print('|+++++++++++结束程序请留空或输入其他任意字符++++++++++++')
     order = input('=============请输入你想要进行的操作=============:')
     if order == '1':
-        while count > 12500:
+        while count > 10000  and len(jqlist) > 0:
             print('--当前文档内第一个代码为%s--' % (jqlist[0]))
             print('++++即将开始获取完整数据的股票为:%s' % (jqlist[0]))
-            x = getdata(jqlist[0], 'a', 12500)
+            x = getdata(jqlist[0], 'a', 10000)
             if x == 1:
                 print('[   股票%s完整数据获取似乎顺利完成了   ]' % (jqlist[0]))
                 del jqlist[0]
@@ -312,7 +318,7 @@ def followorder():
         followorder()
         exit()
         return
-    elif order == '-u':
+    elif order == 'updatestock':
         symbollist = list(get_all_securities(['stock']).index)
         symbollist = pd.DataFrame(columns=["code"],data=symbollist)
         print(type(symbollist))
@@ -321,11 +327,20 @@ def followorder():
         followorder()
         exit()
         return
+    elif order == 'updateinfo':
+        symbollist = list(get_all_securities(['stock']).index)
+        symbollist = pd.DataFrame(columns=["code"],data=symbollist)
+        print(type(symbollist))
+        symbollist.to_csv(Path(str(homefolder + '/stockdb/jqallstock.csv')), encoding='GBK', index=False,header=None)
+        print('已获取最新股票列表到jqlist')
+        followorder()
+        exit()
+        return
     elif order == 'insert':
-        while count > 12500:
+        while count > 10000 and len(jqlist) > 0:
             print('--当前文档内第一个代码为%s--' % (jqlist[0]))
             print('++++即将开始获取完整数据的股票为:%s' % (jqlist[0]))
-            x = getDataInsert(jqlist[0], 'a', 12500)
+            x = getDataInsert(jqlist[0], 'a', 10000)
             if x == 1:
                 print('[   股票%s完整数据获取似乎顺利完成了   ]' % (jqlist[0]))
                 del jqlist[0]
@@ -344,7 +359,6 @@ def followorder():
         exit()
         return
 
-
 def getDataInsert(jqcode, n, remain):
     jqcode = jqcode.strip('\n')
     count, total = querylast()
@@ -354,7 +368,6 @@ def getDataInsert(jqcode, n, remain):
     #提取六位代码（tushare使用的代码后缀需要拼接）
     code = jqcode.split('.', 1)[0].strip()
     tscodeadd = '.SH' if jqcode.split('.')[1].strip() == 'XSHG' else '.SZ'
-    tscode = code + tscodeadd
     #确定代码的市场归属
     market = 'shanghai' if jqcode.split('.')[1].strip() == 'XSHG' else 'shenzhen'
     #jqdir = Path(str('./stockdb/joinquant/' + market + '/' + code))
@@ -369,10 +382,13 @@ def getDataInsert(jqcode, n, remain):
         #    os.makedirs(jqdir)
         print('开始获取数据')
         if n == 'a':
-            print('每只股票完整数据最多可能会消耗125万次聚宽次数')
-            datajq = getdatajqnew(jqcode, '1M', starttime, jqmonthheadtime)
-            if(datajq.empty != True):
+            datajq = getdatajqnew(jqcode, '1d', starttime, jqmonthheadtime)
+            if(datajq.empty != True and 1==2):
                 SqliteHelper.InsertDFData(datajq,jqcode.split('.')[1],jqcode.split('.')[0])
+            if(datajq.empty != True and 1==2):
+                SqliteHelper.InsertDFWeekData(datajq,jqcode.split('.')[1],jqcode.split('.')[0])
+            if(datajq.empty != True):
+                SqliteHelper.InsertDFDayData(datajq,jqcode.split('.')[1],jqcode.split('.')[0])
             #datajq.to_csv(dbdirjqmonth, encoding='GBK')
             #datajq = getdatajqnew(jqcode, '1w', starttime, jqweekheadtime)
             #datajq.to_csv(dbdirjqweek, encoding='GBK')
@@ -394,6 +410,7 @@ def getDataInsert(jqcode, n, remain):
         print('帐号剩余的聚宽数据获取次数不足')
         x = 0
         return x
+
 
 
 
