@@ -71,6 +71,19 @@ class sqlite3Helper():
         except Exception as e:
             raise e
     
+    # 批量插入,返回受影响行数
+    # sql = "insert into daydata(date, exchange, symbol) values (?,?,?)"
+    # values = [("11", "22","33"),    ("22", "33", "44")]
+    def executeBulkCopy(self,sql,values):
+        try:
+            conn = self.getconn()
+            resultlist = conn.executemany(sql, values)
+            conn.commit()
+            conn.close()
+            return resultlist.rowcount
+        except Exception as e:
+            raise e
+
     # 关闭数据库连接
     def releaseconn(self):
         try:
@@ -81,7 +94,8 @@ class sqlite3Helper():
             
 
 #slatehelper = sqlite3Helper(r'E:\小程序\Python_Test_del\JQStockDataY.db')
- 
+#slatehelper = SqliteHelper.sqlite3Helper(r'E:\小程序\Python_Test_del\JQStockDataY.db')
+
 #if __name__ == '__main__':
 #    #r = slatehelper.executeAdapter('SELECT count(*) FROM daydata')
 #    r = slatehelper.executeNoQuery('insert into daydata (date,exchange,symbol) values (1,2,3)')
