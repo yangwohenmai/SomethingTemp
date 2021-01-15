@@ -171,7 +171,7 @@ def yinzi(yinzi,data):
         #df7=df7&df98
         #print (len(df77),len(df7),len(df9),len(data))
         df7 = list(df7)
-        df_all = data.ix[df7, [0, 1]]
+        df_all = data.iloc[df7, [0, 1]]
     elif yinzi == 'OP_CL':
         df9 = set(data[data['30'] <= 4.9].index.tolist())
         df91 = set(data[data['30'] >= -9.8].index.tolist())
@@ -182,7 +182,7 @@ def yinzi(yinzi,data):
 
         df7 = df9 & df91 & df92 & df93 & df94 & df95
         df7 = list(df7)
-        df_all = data.ix[df7, [0, 1]]
+        df_all = data.iloc[df7, [0, 1]]
     elif yinzi=='model2':
         #print(data)
         data_copy = copy.deepcopy(data)

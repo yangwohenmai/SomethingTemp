@@ -132,12 +132,12 @@ def cal_label(min_data_30,label):
     for index in range(int(len(min_data_30) / 8) - 1):
         group_trade = min_data_30[index * 8:index * 8 + 8 * 2].reset_index(drop=True)  # 切割dataframe
         #print(11,group_trade)
-        time_trade = group_trade.ix[[0, 1, 2, 6,8,9,10,14], [0,1,2,3,4,5]].reset_index(drop=True)
+        time_trade = group_trade.iloc[[0, 1, 2, 6,8,9,10,14], [0,1,2,3,4,5]].reset_index(drop=True)
         #print(time_trade)
         if index == 0:
             limit_up0 = time_trade[0:1]['open'].tolist()[0]
         else:
-            limit_up0 = min_data_30.ix[index * 8-1]['close']
+            limit_up0 = min_data_30.loc[index * 8-1]['close']
         #print(limit_up0)
         label_1 = time_trade[0:1]['open'].tolist()[0]  # 9:30
         label_2 = time_trade[0:1]['close'].tolist()[0]   # 10:00
@@ -505,10 +505,8 @@ def build_train_data():
     p = multiprocessing.Pool(2)  # 开辟进程池
     for i in range(len(all_code)):  # 开辟14个进程
         stock_code = all_code[i]
-        # load_data(stock_code, qa_min_data_dir, qa_day_data_dir, SELECTOR, window, date_list, shIndex_chglist,
-        #           stock_dict, i)
-        p.apply_async(load_data, (stock_code, qa_min_data_dir,qa_day_data_dir,SELECTOR,window,
-                                        date_list, shIndex_chglist, stock_dict, i,), callback=mycallback)
+        #load_data(stock_code, qa_min_data_dir, qa_day_data_dir, SELECTOR, window, date_list, shIndex_chglist, stock_dict, i)
+        p.apply_async(load_data, (stock_code, qa_min_data_dir,qa_day_data_dir,SELECTOR,window, date_list, shIndex_chglist, stock_dict, i,), callback=mycallback)
 
     p.close()  # 关闭进程池
     p.join()  # 等待开辟的所有进程执行完后，主进程才继续往下执行
@@ -659,7 +657,7 @@ if __name__ == '__main__':
     min_data_dir = cn.qa_his_min_data_dir  # 盘后分钟数据存放目录
     day_data_dir = cn.qa_his_day_data_dir  # 日线数据存放目录
     print(min_data_dir)
-    export_csv_files('2020-01-01', '2020-12-28', min_data_dir, day_data_dir, clean=True)
+    #export_csv_files('2020-01-01', '2020-12-28', min_data_dir, day_data_dir, clean=True)
     # # 对接淘宝30min数据
     # merge()
     # 读取qa导出的日线和分钟数据，计算因子，构造因子数据集用于训练

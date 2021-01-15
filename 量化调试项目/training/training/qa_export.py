@@ -112,8 +112,8 @@ def qa_export_day(stock_file, date_list, day_data_dir):
         block = QA.QAAnalysis_block(code=[stock_file[2:8]], start=date_list[0], end=date_list[-1])
         tur = block.stock_turnover().reset_index()
         day_data = pd.merge(day_data, tur, on=['date', 'code'])
-        # print(day_data)
-        # print(day_data.columns)
+        #print(day_data)
+        #print(day_data.columns)
         day_data.rename(columns={"date": "datetime", "volume": "vol", 0: "tor"}, inplace=True)
         # day_data.columns = ['datetime', 'code', 'open', 'high', 'low', 'close', 'vol', 'amount', 'preclose','adj','tor']
 
@@ -150,14 +150,15 @@ def qa_export_30min(stock_file, date_list, min_data_dir):
             return False
 
         # 如果数据没问题，则保存
-        min_data = min_data.ix[:, ['datetime', 'code', 'open', 'close', 'high', 'low', 'vol']]
+        #min_data = min_data.ix[:, ['datetime', 'code', 'open', 'close', 'high', 'low', 'vol']]
+        min_data = min_data.loc[:, ['datetime', 'code', 'open', 'close', 'high', 'low', 'vol']]
         min_data_file = os.path.join(min_data_dir, stock_file)
         if len(min_data) > 0 :
 
             min_data.to_csv(min_data_file, mode='w', index=False, header=True)
 
-    except:
-        # print 'traceback.print_exc():'; traceback.print_exc()
+    except Exception as e:
+        #traceback.print_exc()
         return False
     return True
 

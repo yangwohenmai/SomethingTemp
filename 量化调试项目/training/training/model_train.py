@@ -487,7 +487,8 @@ def read_stock_data():
     #stock_list = tools.get_stock_list(sort='mktcap', len=1500, update=False)
     #stock_list = tools.hushen_300()
     #print("训练股票范围：", len(stock_list))
-    stock_list = tools.get_stock_list() #get_stock_all()
+    #stock_list = tools.get_stock_list() #get_stock_all()
+    stock_list = tools.get_stock_all()
     #stock_list = tools.get_all_stockcode()
     stock_list = [str[:-4] for str in stock_list]
     #print(stock_list)
